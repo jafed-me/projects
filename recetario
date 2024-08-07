@@ -1,0 +1,155 @@
+from pathlib import Path
+import os
+
+def dar_bienvenida():
+
+    print(f'{'*'*45}')
+    print(f'{'*'*10} BIENVENIDO AL RECETARIO {'*'*10}')
+    print(f'{'*'*45}\n')
+
+    print(f'Ruta: {ruta_recetas}')
+
+    print(f'Hay {len(list(ruta_recetas.rglob('*.txt')))} recetas\n')
+    print(f'{'*'*45}\n')
+
+def imprimir_tablero():
+    print('Opciones\n')
+    print('1: Leer receta')
+    print('2: Crear receta')
+    print('3: Crear categoria')
+    print('4: Eliminar receta')
+    print('5: Eliminar categoria')
+    print('6: Cerrar recetario\n')
+
+def limpiar_consola():
+    input('\nInserte una tecla para continuar... ')
+    os.system('cls')
+
+
+def tablero_categoria():
+    print('\nCATEGORIAS:')
+    for f in categorias_recetas:
+        print(f'* {f}')
+
+def tablero_archivos(cate):
+    print('\nARCHIVOS:')
+    ruta_categorias = Path(ruta_recetas, cate)
+    archivos = [f.stem for f in ruta_categorias.iterdir() if f.is_file()]
+    for a in archivos:
+        print(f'* {a}')
+
+def ruta_categoria(cate):
+    ruta = Path(ruta_recetas, cate)
+    return ruta
+
+def opcion_elegida():
+    opci = input('\nEscribe tu opcion: ')
+    while opci not in ['1','2','3','4','5','6']:
+        print('Opcion errada')
+        opci = input('\nEscribe tu opcion: ')
+    return opci
+
+def categoria_elegida():
+    cate = input('\nElige una categoria: ')
+    while cate not in categorias_recetas:
+        cate = input('\nElige una categoria: ')
+    return cate
+
+def archivo_elegido(cate):
+    archivos = [f.stem for f in ruta_categoria(cate).iterdir() if f.is_file()]
+    archi = input('\nElige una archivo: ')
+    while archi not in archivos:
+        archi = input('\nElige una archivo: ')
+    return archi
+
+def opcion_1():
+    tablero_categoria()
+    categoria = categoria_elegida()
+    ruta_cate = ruta_categoria(categoria)
+    tablero_archivos(categoria)
+    archivo = archivo_elegido(categoria)
+    ruta_archivo = Path(ruta_cate, f'{archivo}.txt')
+    contenido = ruta_archivo.read_text()
+    print(f'\n{contenido}')
+    limpiar_consola()
+
+def opcion_2():
+    tablero_categoria()
+    categoria = categoria_elegida()
+    ruta_cate = ruta_categoria(categoria)
+    tablero_archivos(categoria)
+    nombre_receta = f'{input('\nNombre de la receta: ')}.txt'
+    ruta = Path(ruta_cate, nombre_receta)
+    ruta.write_text(input('\nContenido de la receta: '))
+    print('\nReceta creada !!')
+    limpiar_consola()
+
+def opcion_3():
+    tablero_categoria()
+    nueva_categoria = input('\nNueva categoria: ')
+    ruta_nueva_categoria = Path(ruta_recetas, nueva_categoria)
+    ruta_nueva_categoria.mkdir()
+    print('\nCategoria creada !!')
+    limpiar_consola()
+
+def opcion_4():
+    tablero_categoria()
+    categoria = categoria_elegida()
+    ruta_cate = ruta_categoria(categoria)
+    tablero_archivos(categoria)
+    archivo = archivo_elegido(categoria)
+    ruta_archivo = Path(ruta_cate, f'{archivo}.txt')
+    ruta_archivo.unlink()
+    print('\nReceta eliminada !!')
+    limpiar_consola()
+
+def opcion_5():
+    tablero_categoria()
+    categoria = input('\nElija una categoria: ')
+    ruta_antigua_categoria = Path(ruta_recetas, categoria)
+    ruta_antigua_categoria.rmdir()
+    print('\nCategoria eliminada !!')
+    limpiar_consola()
+
+def opcion_6():
+    print('Recetario cerrado')
+
+
+ruta_recetas= Path(Path.home(), 'Recetas')
+
+categorias_recetas = [file.name for file in ruta_recetas.iterdir() if file.is_dir()]
+
+dar_bienvenida()
+imprimir_tablero()
+
+opcion = opcion_elegida()
+
+while opcion != '6':
+
+    if opcion == '1':
+        opcion_1()
+        imprimir_tablero()
+        opcion = opcion_elegida()
+
+    elif opcion == '2':
+        opcion_2()
+        imprimir_tablero()
+        opcion = opcion_elegida()
+
+    elif opcion == '3':
+        opcion_3()
+        imprimir_tablero()
+        opcion = opcion_elegida()
+
+    elif opcion == '4':
+        opcion_4()
+        imprimir_tablero()
+        opcion = opcion_elegida()
+
+    else:
+        opcion_5()
+        imprimir_tablero()
+        opcion = opcion_elegida()
+
+
+opcion_6()
